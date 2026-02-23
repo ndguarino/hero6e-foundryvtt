@@ -201,11 +201,11 @@ export class Attack {
         return { cvMod, XMLID, name, id };
     }
 
-    static findStrikeKey(item) {
+    static findStrikeKey(actor) {
         // todo: if there is some character that doesn't have a STRIKE maneuver, then this find will fail.
         // if the character has been loaded from an HDC then they will have the default maneuvers
         // if they have not been loaded from and HDC they won't have multiple attack and shouldn't get here.
-        const strike = item.actor.items.find((item) => "STRIKE" === item.system.XMLID);
+        const strike = actor.items.find((item) => "STRIKE" === item.system.XMLID);
         return strike?.id;
     }
 
@@ -215,8 +215,8 @@ export class Attack {
         }
         const index = data.action.maneuver.attackKeys.length;
         const attackKey = `attack-${index}`;
-        const itemKey = Attack.findStrikeKey(data.item);
-        const targetKey = data.action.targetedTokens?.length ? data.action.targetedTokens[0].id : "NONE";
+        const itemKey = Attack.findStrikeKey(data.actor);
+        const targetKey = data.action.system.targetedTokens?.length ? data.action.system.targetedTokens[0].id : "NONE";
         const multipleAttackKeys = { itemKey, attackKey, targetKey };
         data.action.maneuver[attackKey] = multipleAttackKeys;
         data.action.maneuver.attackKeys.push(multipleAttackKeys);
@@ -301,10 +301,13 @@ export class Attack {
     }
 
     static getMultipleAttackManeuverInfo(item, targetedTokens, options, system) {
-        // TODO: need to adjust DCV
+        const isRapidFire = item.system.XMLID === "RAPIDFIRE";
+        const isSweep = item.system.XMLID === "SWEEP";
         const maneuver = {
             attackerTokenUuid: system.attackerToken?.uuid ?? null,
             isMultipleAttack: true,
+            isRapidFire,
+            isSweep,
             itemId: item.id,
             cvModifiers: [],
         };
@@ -323,7 +326,7 @@ export class Attack {
             }
         }
         // Initialize multiple attack to the default option values
-        const itemKey = Attack.findStrikeKey(item);
+        const itemKey = Attack.findStrikeKey(item?.actor);
 
         maneuver.attackKeys ??= targetedTokens.map((target, index) => {
             return {
@@ -363,13 +366,15 @@ export class Attack {
     // PH: FIXME: Remove this
     static getManeuverInfo(item, targetedTokens, options, system) {
         const isMultipleAttack = item.system.XMLID === "MULTIPLEATTACK";
+        const isRapidFire = item.system.XMLID === "RAPIDFIRE";
+        const isSweep = item.system.XMLID === "SWEEP";
         const isHaymakerAttack = item.system.XMLID === "HAYMAKER";
         // todo: Combined Attack
         // todo: martial maneuver plus a weapon
         // todo: Compound Power
         // answer: probably a specialized use case of multiple attack
 
-        if (isMultipleAttack) {
+        if (isMultipleAttack || isRapidFire || isSweep) {
             return Attack.getMultipleAttackManeuverInfo(item, targetedTokens, options, system);
         }
         if (isHaymakerAttack) {

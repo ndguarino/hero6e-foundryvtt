@@ -1088,14 +1088,12 @@ export class HeroSystem6eItem extends HeroObjectCacheMixin(Item) {
                 case "MULTIPLEATTACK":
                 case "OTHERATTACKS":
                 case "PULLINGAPUNCH":
-                case "RAPIDFIRE":
                 case "ROLLWITHAPUNCH":
                 case "SETANDBRACE":
                 case "SHOVE":
                 case "SNAPSHOT":
                 case "STRAFE":
                 case "SUPPRESSIONFIRE":
-                case "SWEEP":
                 case "THROW":
                 case "TRIP":
                 default:
