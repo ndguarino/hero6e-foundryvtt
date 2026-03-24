@@ -26,10 +26,11 @@ export class HeroSystemActorSheetV2 extends HandlebarsApplicationMixin(ActorShee
 
     static DEFAULT_OPTIONS = {
         //id: "foo-form",
-        // form: {
+        form: {
         //     //handler: TemplateApplication.#onSubmit,
         //     closeOnSubmit: false, // do not close when submitted
-        // },
+		submitOnChange: true
+	},
         classes: ["herosystem6e", "actor-sheet-v2a"],
         position: {
             width: 800,
