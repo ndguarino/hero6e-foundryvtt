@@ -27,10 +27,10 @@ export class HeroSystemActorSheetV2 extends HandlebarsApplicationMixin(ActorShee
     static DEFAULT_OPTIONS = {
         //id: "foo-form",
         form: {
-        //     //handler: TemplateApplication.#onSubmit,
-        //     closeOnSubmit: false, // do not close when submitted
-		submitOnChange: true
-	},
+            //     //handler: TemplateApplication.#onSubmit,
+            //     closeOnSubmit: false, // do not close when submitted
+            submitOnChange: true,
+        },
         classes: ["herosystem6e", "actor-sheet-v2a"],
         position: {
             width: 800,
@@ -791,6 +791,18 @@ export class HeroSystemActorSheetV2 extends HandlebarsApplicationMixin(ActorShee
                 ev.target.closest("li").classList.toggle("expanded");
             });
         });
+
+        // Handle form mirroring for inputs which exist in multiple locations on the sheet
+        const mirroredFields = this.element.querySelectorAll("input[data-mirror-field]");
+        for (const input of mirroredFields) {
+            input.addEventListener("change", async (e) => {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                const field = e.currentTarget.dataset.mirrorField;
+                const value = e.currentTarget.value;
+                await this.actor.update({ [field]: value });
+            });
+        }
 
         // Edit input buttons
         // REF: https://foundryvtt.wiki/en/development/api/applicationv2
